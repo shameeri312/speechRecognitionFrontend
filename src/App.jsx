@@ -1,136 +1,107 @@
-"use client";
-import { useState } from "react";
-import axios from "axios";
-import "./App.css"
+import { useState, useEffect } from 'react'
+import './App.css'
+import Home from './components/home/home'
+import EmotionDetector from './components/emotionDetector/EmotionDetector'
+import { FaFacebookF, FaInstagram, FaLinkedin } from 'react-icons/fa6'
+import Login from './components/login/login'
 
-const Home = () => {
+const App = () => {
+  const [tab, setTab] = useState('home')
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
-  const [file, setFile] = useState(null);
-  const [emotion, setEmotion] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('')
+  useEffect(() => {
+    // Check if user is authenticated based on localStorage
+    const userEmail = localStorage.getItem('userEmail')
+    const userPassword = localStorage.getItem('userPassword')
 
-  const handleFileChange = (e) => setFile(e.target.files[0]);
-
-  const handleUpload = async () => {
-    if (!file) return alert("Please upload an audio file!");
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      setIsLoading(true);
-      const { data } = await axios.post("http://127.0.0.1:5000/predict", formData);
-
-      setEmotion(data.emotion);
-      setIsLoading(false);
-    } catch (error) {
-      setIsLoading(false);
-      setError(error.message);
-      console.error("Error detecting emotion:", error);
-
+    if (userEmail && userPassword) {
+      setIsAuthenticated(true)
+    } else {
+      setIsAuthenticated(false)
+      if (tab == 'detector') setTab('login') // Redirect to login if not authenticated
     }
-  };
-
+  }, [tab])
 
   return (
-    <div style={{
-      justifyContent: 'center',
-      boxShadow: '0 0 20px #c7c7c75d',
-      padding: '30px 0',
-      flexDirection: 'column',
-      borderRadius: '25px',
-      alignItems: 'center',
-      display: "flex",
-      width: '450px',
-      gap: '10px'
-    }}>
-      <h2
-        style={{
-          fontSize: '28px',
-          margin: 0
-        }}
-      >Speech Emotion Detector</h2>
+    <main className="main overflow-y-auto">
+      <div className="bg-[#0000005d] gap-6 h-[90vh] flex flex-col justify-center">
+        {tab === 'home' ? (
+          <>
+            <h1 className="lg:leading-24 font-extrabold text-white tracking-wider uppercase text-center text-6xl lg:text-7xl xl:text-8xl">
+              Speech Emotion <br /> Detector
+            </h1>
 
-      <div style={{
-        display: 'flex',
-        background: "white",
-        borderRadius: '15px',
-        padding: '5px 5px 5px 10px',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        border: '1px solid gray',
-        gap: '10px',
-        width: '80%',
-      }}>
-        <input type="file" id="voice" style={{
-          display: 'none'
-        }} accept="audio/*" onChange={handleFileChange} className="mb-4" />
-        <span>
-          {file ? file.name : "Upload an audio file"}
-        </span>
-
-        <button style={{
-          padding: '5px',
-          border: "none",
-          outline: 'none',
-          borderRadius: '10px',
-          cursor: 'pointer'
-        }}
-          onClick={() => { setEmotion(''); setError(''); setFile(null) }}
-        >
-          <label
-            style={{
-              cursor: 'pointer',
-              color: "red"
-
-            }}
-            htmlFor="voice"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M20.5 10.19H17.61C15.24 10.19 13.31 8.26 13.31 5.89V3C13.31 2.45 12.86 2 12.31 2H8.07C4.99 2 2.5 4 2.5 7.57V16.43C2.5 20 4.99 22 8.07 22H15.93C19.01 22 21.5 20 21.5 16.43V11.19C21.5 10.64 21.05 10.19 20.5 10.19ZM11.53 13.53C11.38 13.68 11.19 13.75 11 13.75C10.81 13.75 10.62 13.68 10.47 13.53L9.75 12.81V17C9.75 17.41 9.41 17.75 9 17.75C8.59 17.75 8.25 17.41 8.25 17V12.81L7.53 13.53C7.24 13.82 6.76 13.82 6.47 13.53C6.18 13.24 6.18 12.76 6.47 12.47L8.47 10.47C8.54 10.41 8.61 10.36 8.69 10.32C8.71 10.31 8.74 10.3 8.76 10.29C8.82 10.27 8.88 10.26 8.95 10.25C8.98 10.25 9 10.25 9.03 10.25C9.11 10.25 9.19 10.27 9.27 10.3C9.28 10.3 9.28 10.3 9.29 10.3C9.37 10.33 9.45 10.39 9.51 10.45C9.52 10.46 9.53 10.46 9.53 10.47L11.53 12.47C11.82 12.76 11.82 13.24 11.53 13.53Z" fill="#292D32" />
-              <path d="M17.4297 8.81048C18.3797 8.82048 19.6997 8.82048 20.8297 8.82048C21.3997 8.82048 21.6997 8.15048 21.2997 7.75048C19.8597 6.30048 17.2797 3.69048 15.7997 2.21048C15.3897 1.80048 14.6797 2.08048 14.6797 2.65048V6.14048C14.6797 7.60048 15.9197 8.81048 17.4297 8.81048Z" fill="#292D32" />
-            </svg>
-          </label>
-        </button>
+            <p className="max-w-[900px] mx-auto text-xl lg:text-2xl font-serif italic text-center text-gray-300 px-5">
+              An advanced AI-driven Speech Emotion Detection System using
+              Python, Flask, and React.js. Analyze speech patterns to detect
+              emotions with high accuracy, real-time processing, and seamless
+              frontend integration.
+            </p>
+          </>
+        ) : tab === 'detector' ? (
+          <EmotionDetector />
+        ) : (
+          <Login setTab={setTab} />
+        )}
       </div>
 
-      <p style={{
-        padding: '3px 10px',
-        margin: 0,
+      <div className="bg-[#0000005d] px-2 sm:px-6 md:px-10">
+        <div className="max-w-[1336px] h-[7vh] md:h-[8vh] flex justify-between mx-auto bg-gray-300/30">
+          <ul className="w-1/3 flex text-white h-full items-center">
+            <li
+              onClick={() => setTab('home')}
+              className={`${tab === 'home' && 'bg-white text-black hover:bg-white'} transition-all duration-200 cursor-pointer hover:bg-gray-300/60 px-4 md:px-8 lg:px-12 font-semibold text-base md:text-lg lg:text-xl h-full grid place-content-center`}
+            >
+              Home
+            </li>
+            <li
+              onClick={() =>
+                isAuthenticated ? setTab('detector') : setTab('login')
+              }
+              className={`${tab === 'detector' && 'bg-white text-black hover:bg-white'} transition-all duration-200 cursor-pointer hover:bg-gray-300/60 px-4 md:px-8 lg:px-12 font-semibold text-base md:text-lg lg:text-xl h-full grid place-content-center`}
+            >
+              Detector
+            </li>
+            {isAuthenticated ? (
+              <li
+                onClick={() => {
+                  setTab('login')
+                  localStorage.clear()
+                }}
+                className={`${tab === 'login' && 'bg-white text-black hover:bg-white'} transition-all duration-200 cursor-pointer hover:bg-gray-300/60 px-4 md:px-8 lg:px-12 font-semibold text-base md:text-lg lg:text-xl h-full grid place-content-center`}
+              >
+                Logout
+              </li>
+            ) : (
+              <li
+                onClick={() => setTab('login')}
+                className={`${tab === 'login' && 'bg-white text-black hover:bg-white'} transition-all duration-200 cursor-pointer hover:bg-gray-300/60 px-4 md:px-8 lg:px-12 font-semibold text-base md:text-lg lg:text-xl h-full grid place-content-center`}
+              >
+                Login
+              </li>
+            )}
+          </ul>
+          <ul className="w-1/3 hidden md:flex text-white h-full justify-end gap-4 items-center pr-4">
+            <li className="transition-all duration-200 cursor-pointer hover:text-blue-400 px-2 md:px-4 font-semibold text-xl h-full grid place-content-center">
+              <FaFacebookF />
+            </li>
+            <li className="transition-all duration-200 cursor-pointer hover:text-blue-400 px-2 md:px-4 font-semibold text-xl h-full grid place-content-center">
+              <FaInstagram />
+            </li>
+            <li className="transition-all duration-200 cursor-pointer hover:text-blue-400 px-2 md:px-4 font-semibold text-xl h-full grid place-content-center">
+              <FaLinkedin />
+            </li>
+          </ul>
+        </div>
 
-      }}>
-        {
-          !isLoading ? (
-            emotion ? <span style={{
-              color: '#00ff08'
-            }}>
-              Detected Emotion: {emotion}
-            </span> : <span style={{
-              color: 'red'
-            }}>
-              {!file && 'No file found'}
-              {error && error}
-            </span>) : <span>Loading...</span>
-        }
-      </p>
+        <div
+          className={`bg-white max-w-[1336px] ${tab === 'home' ? 'h-full' : 'h-[2vh]'} mx-auto space-y-10`}
+        >
+          {tab === 'home' && <Home />}
+        </div>
+      </div>
+    </main>
+  )
+}
 
-      <button style={{
-        padding: '10px 15px',
-        border: "none",
-        outline: 'none',
-        background: '#ff00008d',
-        color: 'white',
-        fontSize: '14px',
-        borderRadius: '10px',
-        cursor: 'pointer'
-      }} onClick={handleUpload} className="button">
-        Detect Emotion
-      </button>
-
-
-    </div>
-  );
-};
-
-export default Home;
+export default App

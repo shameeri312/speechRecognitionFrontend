@@ -1,41 +1,4 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
 
 .card {
   padding: 2em;
@@ -43,4 +6,101 @@
 
 .read-the-docs {
   color: #888;
+}.speech-emotion-detector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 450px;
+  padding: 30px 0;
+  box-shadow: 0 0 20px rgba(199, 199, 199, 0.4);
+  border-radius: 25px;
+  gap: 20px;
+  background-color: white;
+}
+
+.title {
+  font-size: 28px;
+  margin: 0;
+  font-weight: bold;
+}
+
+.upload-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 80%;
+  padding: 5px;
+  border-radius: 15px;
+  background-color: white;
+  border: 1px solid gray;
+  gap: 10px;
+}
+
+.file-input {
+  display: none;
+}
+
+.clear-button {
+  padding: 8px;
+  border: none;
+  background-color: red;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.recorder-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.record-button {
+  padding: 12px 24px;
+  border: none;
+  outline: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.record-button.recording {
+  background-color: red;
+}
+
+.record-button:not(.recording) {
+  background-color: green;
+}
+
+.audio-player {
+  margin-top: 10px;
+}
+
+.emotion-display {
+  padding: 3px 10px;
+  margin: 0;
+}
+
+.emotion-success {
+  color: #00ff08;
+}
+
+.emotion-error {
+  color: red;
+}
+
+.detect-button {
+  padding: 12px 20px;
+  border: none;
+  background-color: #ff00008d;
+  color: white;
+  font-size: 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.detect-button:hover {
+  background-color: #ff0000;
 }
