@@ -1,17 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 @import 'tailwindcss';
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Funnel Display', sans-serif;
+  font-optical-sizing: auto;
   line-height: 1.5;
   font-weight: 400;
+  font-style: normal;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+* {
+  transition: all 0.2s ease-in-out;
+}
 
+.nova {
+  font-family: 'Share Tech Mono', monospace;
+  font-weight: 400;
+  text-transform: uppercase;
+  font-style: normal;
+}
+.custom {
+  clip-path: polygon(87% 0, 100% 27%, 100% 99%, 0 100%, 0 0);
+}
+
+.gradient {
+  background: linear-gradient(45deg, #98f5e1, #efd139, #c77dff, #00a6fb);
+}
+
+.gradient-new {
+  background: linear-gradient(45deg, #ffe562, #0048ff);
+}
+.backdrop {
+  backdrop-filter: blur(7px);
+}
+
+.zoom-in {
+  transform: scale(1);
+}
+
+.zoom-in:hover {
+  transform: scale(1.3);
+}
 .main {
-  background: url('/bg.jpg');
+  background: url('/bg-dark4.png');
   background-position: top center;
   background-size: cover;
   height: 100vh;
