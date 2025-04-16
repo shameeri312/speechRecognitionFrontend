@@ -66,7 +66,7 @@ const Contact = () => {
             />
           </div>
 
-          <div className="custom gradient w-max rounded-l-xl rounded-br-xl p-1">
+          <div className="custom gradient w-max rounded-l-xl rounded-br-xl p-[2px]">
             <button
               onClick={handleSubmit}
               className="custom nova mx-auto h-12 w-[120px] cursor-pointer rounded-l-xl rounded-br-xl bg-black font-semibold text-white md:h-[56px] md:w-[150px]"

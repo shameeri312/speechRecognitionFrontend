@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import './App.css'
 import EmotionDetector from './components/emotionDetector/EmotionDetector'
 import Login from './components/login/login'
@@ -13,7 +13,7 @@ const App = () => {
   return (
     <main className="main overflow-y-auto">
       <Navbar tab={tab} setTab={setTab} />
-      <div className="flex h-screen flex-col justify-center gap-6 !text-white">
+      <div className="flex h-[calc(100vh_-_80px)] flex-col justify-center gap-6 !text-white">
         {tab === 'home' ? (
           <div className="mx-auto flex max-w-6xl flex-col items-center space-y-4">
             <h1 className="text-center text-6xl font-bold text-white lg:text-7xl xl:text-8xl">

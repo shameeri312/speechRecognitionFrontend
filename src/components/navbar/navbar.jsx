@@ -25,7 +25,7 @@ const Navbar = ({ tab, setTab }) => {
   }
 
   return (
-    <header className="backdrop absolute top-0 w-full text-white">
+    <header className="backdrop w-full text-white">
       <nav className="mx-auto flex h-[80px] items-center justify-between px-4 xl:container xl:px-0">
         <div className="xl:w-1/3 2xl:w-1/5">
           <h1 className="flex items-center gap-2 text-2xl font-bold lg:text-3xl">
