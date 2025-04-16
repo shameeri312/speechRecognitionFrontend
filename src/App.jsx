@@ -5,6 +5,7 @@ import Login from './components/login/login'
 import Navbar from './components/navbar/navbar'
 import BottomNav from './components/bottomNav/bottomNav'
 import About from './components/about/about'
+import Contact from './components/contact/contact'
 
 const App = () => {
   const [tab, setTab] = useState('home')
@@ -12,7 +13,7 @@ const App = () => {
   return (
     <main className="main overflow-y-auto">
       <Navbar tab={tab} setTab={setTab} />
-      <div className="flex h-[calc(100vh_-_80px)] flex-col justify-center gap-6 !text-white">
+      <div className="flex h-screen flex-col justify-center gap-6 !text-white">
         {tab === 'home' ? (
           <div className="mx-auto flex max-w-6xl flex-col items-center space-y-4">
             <h1 className="text-center text-6xl font-bold text-white lg:text-7xl xl:text-8xl">
@@ -40,11 +41,14 @@ const App = () => {
           <Login setTab={setTab} />
         ) : tab === 'signup' ? (
           <Login setTab={setTab} />
+        ) : tab === 'about' ? (
+          <About />
+        ) : tab === 'contact' ? (
+          <Contact />
         ) : (
-          <>
-            ss
-            <About />
-          </>
+          <h1 className="text-center text-4xl font-bold text-white lg:text-5xl xl:text-6xl">
+            Page not found
+          </h1>
         )}
       </div>
       <BottomNav tab={tab} setTab={setTab} />

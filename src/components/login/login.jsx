@@ -12,7 +12,6 @@ const Login = ({ setTab }) => {
       return
     }
 
-    // Save login details to localStorage
     localStorage.setItem('userEmail', email)
     localStorage.setItem('userPassword', password)
 
@@ -20,44 +19,51 @@ const Login = ({ setTab }) => {
   }
 
   return (
-    <div className="mx-auto flex w-full justify-center gap-5 px-6 md:px-0 2xl:w-[1336px]">
-      <div className="backdrop mx-auto flex h-auto w-full flex-col rounded-2xl border-2 border-gray-600 bg-gradient-to-br from-neutral-600/20 to-gray-800/40 p-10 shadow-xl md:h-[550px] md:w-[550px]">
-        <div className="flex h-full w-full flex-col justify-around gap-6">
-          <h2 className="text-4xl font-bold md:text-5xl">Login</h2>
-          <p>Login in to get access to the speech emotion detector</p>
+    <div className="mx-auto flex w-full flex-wrap justify-center gap-5 px-4 py-10 xl:container xl:px-0">
+      {/* Login Form */}
+      <div className="backdrop flex h-auto w-full max-w-md flex-col rounded-2xl border-2 border-gray-600 bg-gradient-to-br from-neutral-600/20 to-gray-800/40 p-8 shadow-xl">
+        <div className="flex w-full flex-col justify-between gap-4">
+          <h2 className="text-3xl font-bold md:text-4xl">Login</h2>
+          <p className="text-sm text-gray-300">
+            Log in to access the speech emotion detector.
+          </p>
 
-          <div className="flex flex-col gap-2">
-            <label htmlFor="email">Email</label>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="email" className="text-sm">
+              Email
+            </label>
             <input
               type="text"
               id="email"
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="h-12 rounded-xl border border-neutral-600 bg-gradient-to-br from-neutral-600/20 to-gray-400/20 px-5 md:h-[56px]"
+              className="h-10 rounded-xl border border-neutral-600 bg-gradient-to-br from-neutral-600/20 to-gray-400/20 px-4 text-sm text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none md:h-12"
             />
           </div>
 
-          <div className="flex flex-col gap-2">
-            <label htmlFor="password">Password</label>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="password" className="text-sm">
+              Password
+            </label>
             <input
               type="password"
               id="password"
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="h-12 rounded-xl border border-neutral-600 bg-gradient-to-br from-neutral-600/20 to-gray-400/20 px-5 md:h-[56px]"
+              className="h-10 rounded-xl border border-neutral-600 bg-gradient-to-br from-neutral-600/20 to-gray-400/20 px-4 text-sm text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none md:h-12"
             />
           </div>
 
-          <p className="text-start text-neutral-300 underline">
+          <p className="mt-1 cursor-pointer text-sm text-neutral-300 underline hover:text-white">
             Forgot Password?
           </p>
 
-          <div className="custom gradient w-max rounded-l-xl rounded-br-xl p-1">
+          <div className="custom gradient w-max rounded-l-xl rounded-br-xl p-[2px]">
             <button
               onClick={handleLogin}
-              className="custom nova mx-auto h-12 w-[120px] cursor-pointer rounded-l-xl rounded-br-xl bg-black font-semibold md:h-[56px] md:w-[150px]"
+              className="nova custom mx-auto h-10 w-[110px] cursor-pointer rounded-l-xl rounded-br-xl bg-black text-sm font-semibold text-white transition hover:bg-gray-900 md:h-12 md:w-[140px]"
             >
               Login
             </button>
@@ -65,13 +71,25 @@ const Login = ({ setTab }) => {
         </div>
       </div>
 
-      <div className="mx-auto hidden w-[calc(100%_-_550px)] flex-col gap-4 rounded-2xl border-2 border-gray-500 bg-gradient-to-br from-neutral-600/20 to-gray-800/40 p-10 text-white backdrop-blur lg:flex">
-        <h2 className="text-4xl font-bold md:text-5xl">How it works?</h2>
-        <p>
-          Login in to get access to the speech emotion detector Lorem, ipsum
-          dolor sit amet consectetur adipisicing elit. Nostrum adipisci eos
-          illum est suscipit maxime reiciendis, animi laborum tenetur itaque,
-          sit error sint sed pariatur!
+      {/* Info Section */}
+      <div className="hidden h-auto w-full max-w-md flex-col rounded-2xl border-2 border-gray-500 bg-gradient-to-br from-neutral-600/20 to-gray-800/40 p-8 text-white backdrop-blur lg:flex">
+        <h2 className="text-2xl font-bold text-white">How it works?</h2>
+        <p className="text-sm leading-relaxed text-gray-300">
+          Speak your feelings — we’ll decode them for you. Our Speech Emotion
+          Detector uses AI and deep learning to analyze your voice and identify
+          your emotional state.
+          <br />
+          <br />
+          🎙 Just log in and record a short audio clip.
+          <br />
+          🧠 Our system will detect emotions like happy, sad, angry, fearful,
+          and more — in real time.
+          <br />
+          🔋 Powered by TensorFlow, accurate, fast, and mental wellness focused.
+          <br />
+          <img src="/reactions.png" alt="reactions" />
+          <br />
+          Login now and let your voice speak your emotions!
         </p>
       </div>
     </div>
