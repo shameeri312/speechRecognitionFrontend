@@ -1,30 +1,27 @@
+import { useNavigate } from 'react-router-dom'
+
 const Home = () => {
+  const navigate = useNavigate()
+
   return (
-    <>
-      <div className="flex gap-4 items-center px-8 sm:px-12 md:px-16 lg:px-20">
-        <div className="h-[2px] bg-gray-300 w-full" />
-        <h6 className="text-2xl sm:w-[400px] mx-auto text-center font-serif">
-          Semester Project
-        </h6>
-        <div className="h-[2px] bg-gray-300 w-full" />
-      </div>
-      <h1 className="py-4  font-extrabold tracking-wider uppercase text-center text-5xl md:text-6xl lg:text-7xl">
-        About our <br />
-        Speech Emotion <br /> Detector
+    <div className="mx-auto flex max-w-6xl flex-col items-center space-y-4">
+      <h1 className="text-center text-6xl font-bold text-white lg:text-7xl xl:text-8xl">
+        Speech Emotion Detector
       </h1>
-      <p className="text-xl max-w-[800px] mx-auto text-center font-serif italic px-5">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Necessitatibus
-        consequatur modi minima laborum officiis perferendis error!
+      <p className="mx-auto px-5 text-center text-xl text-gray-300 lg:text-2xl">
+        An advanced AI-driven Speech Emotion Detection System using Python,
+        Flask, and React.js. Analyze speech patterns to detect emotions with
+        high accuracy, real-time processing, and seamless frontend integration.
       </p>
-
-      <div className="md:py-4"></div>
-
-      <img
-        src="/language-models.jpg"
-        alt="image"
-        className="mx-auto w-[95%] md:w-[90%] lg:w-[80%] object-contain"
-      />
-    </>
+      <div className="custom gradient rounded-l-xl rounded-br-xl p-[2px]">
+        <button
+          onClick={() => navigate('/detector')}
+          className="custom nova h-12 w-[170px] cursor-pointer rounded-l-xl rounded-br-xl bg-black text-sm font-bold uppercase md:h-16 md:w-[200px] md:text-base"
+        >
+          Detect Emotion
+        </button>
+      </div>
+    </div>
   )
 }
 

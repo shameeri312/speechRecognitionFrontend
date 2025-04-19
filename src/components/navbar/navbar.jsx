@@ -1,27 +1,26 @@
 import { Bot } from 'lucide-react'
-import React from 'react'
 import { useEffect } from 'react'
 import { useState } from 'react'
+import { NavLink, useNavigate } from 'react-router-dom'
 
-const Navbar = ({ tab, setTab }) => {
+const Navbar = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
-    // Check if user is authenticated based on localStorage
-    const userEmail = localStorage.getItem('userEmail')
-    const userPassword = localStorage.getItem('userPassword')
+    const token = localStorage.getItem('token')
 
-    if (userEmail && userPassword) {
+    if (token) {
       setIsAuthenticated(true)
     } else {
       setIsAuthenticated(false)
-      if (tab == 'detector') setTab('signin') // Redirect to login if not authenticated
     }
-  }, [tab])
+  }, [])
 
   const logout = () => {
     localStorage.clear()
     setIsAuthenticated(false)
+    navigate('/')
   }
 
   return (
@@ -38,13 +37,13 @@ const Navbar = ({ tab, setTab }) => {
         <>
           <ul className="nova hidden h-full items-center justify-center gap-16 uppercase lg:flex xl:w-1/3 2xl:w-2/5">
             <li>
-              <button onClick={() => setTab('home')}>Home</button>
+              <NavLink to={'/'}>Home</NavLink>
             </li>
             <li>
-              <button onClick={() => setTab('about')}>About</button>
+              <NavLink to={'/about'}>About</NavLink>
             </li>
             <li>
-              <button onClick={() => setTab('contact')}>Contact</button>
+              <NavLink to={'/contact'}>Contact</NavLink>
             </li>
           </ul>
         </>
@@ -62,20 +61,19 @@ const Navbar = ({ tab, setTab }) => {
           ) : (
             <>
               <div className="hidden rounded-l-lg rounded-br-lg p-[2px] md:inline">
-                <button
-                  onClick={() => setTab('signup')}
+                <NavLink
+                  to={'/signup'}
                   className="cursor-pointer px-6 py-2 uppercase"
                 >
                   Create Account
-                </button>
+                </NavLink>
               </div>
               <div className="custom gradient rounded-l-lg rounded-br-lg p-[2px]">
-                <button
-                  onClick={() => setTab('signin')}
-                  className="custom cursor-pointer rounded-l-lg rounded-br-lg bg-black px-6 py-2 uppercase"
-                >
-                  Signin
-                </button>
+                <NavLink to={'/signin'}>
+                  <button className="custom cursor-pointer rounded-l-lg rounded-br-lg bg-black px-6 py-2 uppercase">
+                    Signin
+                  </button>
+                </NavLink>
               </div>
             </>
           )}

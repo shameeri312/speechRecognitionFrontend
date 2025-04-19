@@ -22,7 +22,7 @@ const Contact = () => {
       <div className="backdrop flex h-auto w-full max-w-lg flex-col rounded-2xl border-2 border-gray-600 bg-gradient-to-br from-neutral-600/20 to-gray-800/40 p-8 shadow-xl">
         <div className="flex h-full w-full flex-col justify-around gap-6">
           <h2 className="text-3xl font-bold md:text-4xl">Contact Us</h2>
-          <p className="text-gray-300">We'd love to hear from you!</p>
+          <p className="text-gray-300">We&apos;d love to hear from you!</p>
 
           <div className="flex flex-col gap-2">
             <label htmlFor="name" className="text-white">
