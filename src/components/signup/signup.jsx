@@ -1,5 +1,8 @@
+'use client'
+
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import bcrypt from 'bcryptjs'
 
 const Signup = () => {
   const [email, setEmail] = useState('')
@@ -21,21 +24,29 @@ const Signup = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, fullname, password }),
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        navigate('/signin')
-      } else {
-        setError(data.error || 'Signup failed. Please try again.')
+      // Check if email already exists in localStorage
+      const existingUsers = JSON.parse(localStorage.getItem('users')) || {}
+      if (existingUsers[email]) {
+        setError('Email already exists.')
+        return
       }
+
+      // Hash the password
+      const salt = await bcrypt.genSalt(10)
+      const hashedPassword = await bcrypt.hash(password, salt)
+
+      // Store user credentials in localStorage
+      existingUsers[email] = {
+        email,
+        fullname,
+        password: hashedPassword,
+      }
+      localStorage.setItem('users', JSON.stringify(existingUsers))
+
+      // Navigate to login
+      navigate('/signin')
     } catch (err) {
-      console.log(err)
+      console.error('Signup error:', err)
       setError('An error occurred. Please try again later.')
     }
   }
@@ -123,7 +134,7 @@ const Signup = () => {
           <p className="mt-4 text-sm text-gray-300">
             Already have an account?{' '}
             <span
-              onClick={() => navigate('/login')}
+              onClick={() => navigate('/signin')}
               className="cursor-pointer text-indigo-400 underline hover:text-indigo-300"
             >
               Log in
@@ -136,7 +147,7 @@ const Signup = () => {
       <div className="hidden h-auto w-full max-w-md flex-col rounded-2xl border-2 border-gray-500 bg-gradient-to-br from-neutral-600/20 to-gray-800/40 p-8 text-white backdrop-blur lg:flex">
         <h2 className="text-2xl font-bold text-white">How it works?</h2>
         <p className="text-sm leading-relaxed text-gray-300">
-          Speak your feelings — we’ll decode them for you. Our Speech Emotion
+          Speak your feelings — we will decode them for you. Our Speech Emotion
           Detector uses AI and deep learning to analyze your voice and identify
           your emotional state.
           <br />

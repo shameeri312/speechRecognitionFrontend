@@ -1,6 +1,8 @@
+'use client'
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import bcrypt from 'bcryptjs'
 
 const Login = () => {
   const [email, setEmail] = useState('')
@@ -15,24 +17,32 @@ const Login = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      })
+      // Retrieve users from localStorage
+      const users = JSON.parse(localStorage.getItem('users')) || {}
+      const user = users[email]
 
-      const data = await response.json()
-
-      if (response.ok) {
-        localStorage.setItem('token', data.token)
-        localStorage.setItem('userEmail', data.user.email)
-        localStorage.setItem('userFullname', data.user.fullname)
-        navigate('/detector')
-      } else {
-        setError(data.error || 'Login failed. Please try again.')
+      if (!user) {
+        setError('Invalid credentials.')
+        return
       }
+
+      // Verify password
+      const isPasswordValid = await bcrypt.compare(password, user.password)
+      if (!isPasswordValid) {
+        setError('Invalid credentials.')
+        return
+      }
+
+      // Generate a mock token (for compatibility with EmotionDetector)
+      const mockToken = Math.random().toString(36).substring(2)
+      localStorage.setItem('token', mockToken)
+      localStorage.setItem('userEmail', user.email)
+      localStorage.setItem('userFullname', user.fullname)
+
+      // Navigate to detector
+      navigate('/detector')
     } catch (err) {
-      console.log(err)
+      console.error('Login error:', err)
       setError('An error occurred. Please try again later.')
     }
   }
@@ -109,9 +119,9 @@ const Login = () => {
       <div className="hidden h-auto w-full max-w-md flex-col rounded-2xl border-2 border-gray-500 bg-gradient-to-br from-neutral-600/20 to-gray-800/40 p-8 text-white backdrop-blur lg:flex">
         <h2 className="text-2xl font-bold text-white">How it works?</h2>
         <p className="text-sm leading-relaxed text-gray-300">
-          Speak your feelings — we&apos;ll decode them for you. Our Speech
-          Emotion Detector uses AI and deep learning to analyze your voice and
-          identify your emotional state.
+          Speak your feelings — we will decode them for you. Our Speech Emotion
+          Detector uses AI and deep learning to analyze your voice and identify
+          your emotional state.
           <br />
           <br />
           🎙 Just log in and record a short audio clip.
