@@ -11,6 +11,7 @@ import '../../App.css'
 const EmotionDetector = () => {
   const [file, setFile] = useState(null)
   const [emotion, setEmotion] = useState('')
+  const [accuracy, setAccuracy] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [isRecording, setIsRecording] = useState(false)
@@ -22,31 +23,31 @@ const EmotionDetector = () => {
   const navigate = useNavigate()
 
   // Initialize WavRecorder, microphone stream, and check login status
+  const initializeRecorder = async () => {
+    try {
+      // Initialize recorder
+      let recorder = new WavRecorder()
+      setWavRecorder(recorder)
+      setIsRecorderReady(true)
+      console.log('WavRecorder initialized')
+    } catch (err) {
+      console.error('Failed to initialize recorder:', err)
+      setError(
+        'Failed to access microphone. Please allow microphone access and try again.'
+      )
+    }
+  }
   useEffect(() => {
     let recorder
     let stream
-
-    const initializeRecorder = async () => {
-      try {
-        // Request microphone access
-        stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-        console.log('Microphone stream acquired')
-
-        // Initialize recorder
-        recorder = new WavRecorder()
-        setWavRecorder(recorder)
-        setIsRecorderReady(true)
-        console.log('WavRecorder initialized')
-      } catch (err) {
-        console.error('Failed to initialize recorder:', err)
-        setError(
-          'Failed to access microphone. Please allow microphone access and try again.'
-        )
-      }
-    }
-
+    ;(async () => {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      console.log('Microphone stream acquired')
+    })()
+    // Request microphone access
     // Check if user is logged in
     const token = localStorage.getItem('token')
+
     if (!token) {
       setError('Please log in to continue.')
       navigate('/signin')
@@ -78,6 +79,7 @@ const EmotionDetector = () => {
 
   // Start Recording
   const startRecording = async () => {
+    console.log(wavRecorder)
     if (!wavRecorder || !isRecorderReady) {
       setError('Recorder not ready. Please try again.')
       console.error('WavRecorder not ready')
@@ -107,14 +109,16 @@ const EmotionDetector = () => {
       await wavRecorder.stop()
       console.log('Recording stopped')
       const blob = await wavRecorder.getBlob()
+      console.log(blob)
       if (!blob || blob.size === 0) {
         console.error('No valid blob received:', blob)
-        setError('Recording is empty or invalid. Please try again.')
-        setIsRecording(false)
+        setError('Press again to stop recording.')
+
         return
       }
       console.log('Recording completed, blob:', blob.type, blob.size)
       setRecordedBlob(blob)
+      setError('')
       setFile(null)
       setIsRecording(false)
       setButtonText('Detect')
@@ -169,11 +173,15 @@ const EmotionDetector = () => {
           },
         }
       )
+      console.log(response)
 
-      setEmotion(response.data.emotion)
-      setButtonText('Detected')
-      setError('')
-      console.log('Backend response:', response.data)
+      if (response.status === 200) {
+        setEmotion(response.data.emotion)
+        setAccuracy(response.data.accuracy)
+        setButtonText('Detected')
+        setError('')
+        console.log('Backend response:', response.data)
+      }
     } catch (error) {
       const errorMessage =
         error.response?.data?.error || 'Error detecting emotion.'
@@ -197,7 +205,7 @@ const EmotionDetector = () => {
         Upload or record an audio file to detect emotion
       </p>
 
-      <div className="flex justify-center gap-4">
+      <div className="flex flex-wrap justify-center gap-4">
         <div
           className={`nova w-max rounded-lg rounded-br-lg p-[2px] ${
             mode === 'upload' ? 'gradient' : 'bg-transparent'
@@ -295,6 +303,7 @@ const EmotionDetector = () => {
                     setFile(null)
                     setRecordedBlob(null)
                     setButtonText('Detect')
+                    initializeRecorder()
                   }}
                   disabled={recordedBlob == null}
                 >
@@ -334,20 +343,28 @@ const EmotionDetector = () => {
         </div>
       )}
 
-      <p className="flex h-12 items-center justify-center rounded-xl px-5 text-lg md:h-[56px]">
+      <div className="flex h-12 items-center justify-center rounded-xl px-5 text-lg md:h-[56px]">
         {isLoading ? (
           'Loading...'
         ) : emotion ? (
-          <span className="mx-auto text-white">
-            Detected Emotion:{' '}
-            <span className="nova font-semibold text-green-400 capitalize">
-              {emotion}
-            </span>
-          </span>
+          <>
+            <p className="mx-auto text-white">
+              Detected Emotion:{' '}
+              <span className="nova font-semibold text-green-400 capitalize">
+                {emotion}
+              </span>
+            </p>
+            <p className="mx-auto text-white">
+              Accuracy:{' '}
+              <span className="nova font-semibold text-green-400">
+                {Number((accuracy * 100).toFixed(2))}%
+              </span>
+            </p>
+          </>
         ) : (
           <span className="mx-auto text-red-400">{error}</span>
         )}
-      </p>
+      </div>
     </div>
   )
 }

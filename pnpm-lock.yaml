@@ -17,6 +17,9 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.0.6
         version: 4.0.6(vite@6.0.11(jiti@2.4.2)(lightningcss@1.29.1))
+      audio-react-recorder:
+        specifier: ^1.0.5
+        version: 1.0.5(react@18.3.1)
       audio-recorder-polyfill:
         specifier: ^0.4.1
         version: 0.4.1
@@ -711,6 +714,12 @@ packages:
 
   asynckit@0.4.0:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
+
+  audio-react-recorder@1.0.5:
+    resolution: {integrity: sha512-pvzb0rnSDmzd5IjZNSbl3TQ2X/ZQ9vnVHfdtUCYaafrFm4jcdIzSqqM64qqqt+LXbQGVr3nMale1GH6z/yCRww==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: ^16.0.0
 
   audio-recorder-polyfill@0.4.1:
     resolution: {integrity: sha512-SS4qVOzuVwlS/tjQdd0uR+9cCKBTkx4jsAdjM+rMNqoTEWf6bMnBSTfv+FO4Zn9ngxviJOxhkgRWWXsAMqM96Q==}
@@ -2541,6 +2550,11 @@ snapshots:
   async@0.2.10: {}
 
   asynckit@0.4.0: {}
+
+  audio-react-recorder@1.0.5(react@18.3.1):
+    dependencies:
+      prop-types: 15.8.1
+      react: 18.3.1
 
   audio-recorder-polyfill@0.4.1: {}
 

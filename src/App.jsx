@@ -14,7 +14,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <main className="main overflow-y-auto">
-        <Navbar />
+        <Navbar />  
         <div className="flex h-[calc(100vh_-_80px)] flex-col justify-center gap-6 !text-white">
           <Routes>
             <Route path="/" element={<Home />} />
