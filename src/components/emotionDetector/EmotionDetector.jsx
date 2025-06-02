@@ -12,6 +12,7 @@ const EmotionDetector = () => {
   const [file, setFile] = useState(null)
   const [emotion, setEmotion] = useState('')
   const [accuracy, setAccuracy] = useState('')
+  const [sentiment, setSentiment] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [isRecording, setIsRecording] = useState(false)
@@ -25,7 +26,6 @@ const EmotionDetector = () => {
   // Initialize WavRecorder, microphone stream, and check login status
   const initializeRecorder = async () => {
     try {
-      // Initialize recorder
       let recorder = new WavRecorder()
       setWavRecorder(recorder)
       setIsRecorderReady(true)
@@ -37,17 +37,21 @@ const EmotionDetector = () => {
       )
     }
   }
+
   useEffect(() => {
     let recorder
     let stream
     ;(async () => {
-      stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      console.log('Microphone stream acquired')
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+        console.log('Microphone stream acquired')
+      } catch (err) {
+        console.error('Failed to get microphone stream:', err)
+        setError('Microphone access denied. Please allow microphone access.')
+      }
     })()
-    // Request microphone access
-    // Check if user is logged in
-    const token = localStorage.getItem('token')
 
+    const token = localStorage.getItem('token')
     if (!token) {
       setError('Please log in to continue.')
       navigate('/signin')
@@ -56,13 +60,10 @@ const EmotionDetector = () => {
     initializeRecorder()
 
     return () => {
-      // Stop microphone stream
       if (stream) {
         stream.getTracks().forEach((track) => track.stop())
         console.log('Microphone stream stopped')
       }
-
-      // Stop recorder if still active
       if (recorder) {
         recorder.stop()
       }
@@ -73,25 +74,27 @@ const EmotionDetector = () => {
   const handleFileChange = (e) => {
     setFile(e.target.files[0])
     setEmotion('')
+    setAccuracy('')
+    setSentiment('')
     setError('')
     setButtonText('Detect')
   }
 
   // Start Recording
   const startRecording = async () => {
-    console.log(wavRecorder)
     if (!wavRecorder || !isRecorderReady) {
       setError('Recorder not ready. Please try again.')
       console.error('WavRecorder not ready')
       return
     }
     try {
-      // Ensure the recorder is ready by waiting briefly
       await new Promise((resolve) => setTimeout(resolve, 100))
       await wavRecorder.start()
       console.log('Recording started successfully')
       setIsRecording(true)
       setEmotion('')
+      setAccuracy('')
+      setSentiment('')
       setError('')
     } catch (err) {
       console.error('Failed to start recording:', err)
@@ -107,13 +110,10 @@ const EmotionDetector = () => {
     }
     try {
       await wavRecorder.stop()
-      console.log('Recording stopped')
       const blob = await wavRecorder.getBlob()
-      console.log(blob)
       if (!blob || blob.size === 0) {
         console.error('No valid blob received:', blob)
-        setError('Press again to stop recording.')
-
+        setError('No audio recorded. Please try again.')
         return
       }
       console.log('Recording completed, blob:', blob.type, blob.size)
@@ -135,6 +135,8 @@ const EmotionDetector = () => {
     setFile(null)
     setRecordedBlob(null)
     setEmotion('')
+    setAccuracy('')
+    setSentiment('')
     setError('')
     setIsRecording(false)
     setButtonText('Detect')
@@ -173,14 +175,14 @@ const EmotionDetector = () => {
           },
         }
       )
-      console.log(response)
+      console.log('Backend response:', response.data)
 
       if (response.status === 200) {
-        setEmotion(response.data.emotion)
-        setAccuracy(response.data.accuracy)
+        setEmotion(response.data.emotion.label)
+        setAccuracy(response.data.emotion.accuracy)
+        setSentiment(response.data.sentiment)
         setButtonText('Detected')
         setError('')
-        console.log('Backend response:', response.data)
       }
     } catch (error) {
       const errorMessage =
@@ -253,6 +255,8 @@ const EmotionDetector = () => {
               className="size-10 cursor-pointer rounded-full bg-red-500 text-white shadow-md disabled:opacity-65"
               onClick={() => {
                 setEmotion('')
+                setAccuracy('')
+                setSentiment('')
                 setError('')
                 setFile(null)
                 setRecordedBlob(null)
@@ -299,6 +303,8 @@ const EmotionDetector = () => {
                   className="size-10 cursor-pointer rounded-full bg-red-500 text-white shadow-md disabled:opacity-65"
                   onClick={() => {
                     setEmotion('')
+                    setAccuracy('')
+                    setSentiment('')
                     setError('')
                     setFile(null)
                     setRecordedBlob(null)
@@ -343,26 +349,34 @@ const EmotionDetector = () => {
         </div>
       )}
 
-      <div className="flex h-12 items-center justify-center rounded-xl px-5 text-lg md:h-[56px]">
+      <div className="flex h-auto flex-col items-center justify-center gap-2 rounded-xl px-5 py-2 text-lg">
         {isLoading ? (
-          'Loading...'
+          <span className="text-white">Loading...</span>
+        ) : error ? (
+          <span className="text-red-400">{error}</span>
         ) : emotion ? (
           <>
-            <p className="mx-auto text-white">
+            <p className="text-white">
               Detected Emotion:{' '}
               <span className="nova font-semibold text-green-400 capitalize">
-                {emotion}
+                {emotion === 'uncertain'
+                  ? 'Uncertain (Low Confidence)'
+                  : emotion}
               </span>
             </p>
-            <p className="mx-auto text-white">
-              Accuracy:{' '}
-              <span className="nova font-semibold text-green-400">
-                {Number((accuracy * 100).toFixed(2))}%
-              </span>
-            </p>
+            {emotion !== 'uncertain' && (
+              <p className="text-white">
+                Accuracy:{' '}
+                <span className="nova font-semibold text-green-400">
+                  {Number((accuracy * 100).toFixed(2))}%
+                </span>
+              </p>
+            )}
           </>
         ) : (
-          <span className="mx-auto text-red-400">{error}</span>
+          <span className="text-white">
+            No results yet. Upload or record audio to detect emotion.
+          </span>
         )}
       </div>
     </div>
