@@ -23,7 +23,7 @@ const EmotionDetector = () => {
   const [isRecorderReady, setIsRecorderReady] = useState(false)
   const navigate = useNavigate()
 
-  // Initialize WavRecorder, microphone stream, and check login status
+  // Initialize WavRecorder and check login status
   const initializeRecorder = async () => {
     try {
       let recorder = new WavRecorder()
@@ -167,7 +167,7 @@ const EmotionDetector = () => {
     try {
       setIsLoading(true)
       const response = await axios.post(
-        'http://localhost:5000/predict',
+        'http://127.0.0.1:5000/predict',
         formData,
         {
           headers: {
@@ -179,7 +179,7 @@ const EmotionDetector = () => {
 
       if (response.status === 200) {
         setEmotion(response.data.emotion.label)
-        setAccuracy(response.data.emotion.accuracy)
+        setAccuracy(response.data.response_accuracy) // Use response_accuracy
         setSentiment(response.data.sentiment)
         setButtonText('Detected')
         setError('')
@@ -194,14 +194,52 @@ const EmotionDetector = () => {
     }
   }
 
+  // Logout function
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('userEmail')
+    localStorage.removeItem('userFullname')
+    localStorage.removeItem('userProfile')
+    navigate('/signin')
+  }
+
+  // Get user name from localStorage
+  const getUserName = () => {
+    try {
+      const profile = JSON.parse(localStorage.getItem('userProfile'))
+      if (profile && profile.full_name) {
+        return profile.full_name
+      }
+      return localStorage.getItem('userFullname') || 'User'
+    } catch (err) {
+      console.error('Error parsing userProfile:', err)
+      return localStorage.getItem('userFullname') || 'User'
+    }
+  }
+
+  // Get user email from localStorage
+  const getUserEmail = () => {
+    try {
+      const profile = JSON.parse(localStorage.getItem('userProfile'))
+      if (profile && profile.email) {
+        return profile.email
+      }
+      return localStorage.getItem('userEmail') || 'No email'
+    } catch (err) {
+      console.error('Error parsing userProfile:', err)
+      return localStorage.getItem('userEmail') || 'No email'
+    }
+  }
+
   return (
     <div className="backdrop mx-auto flex h-max w-[90%] flex-col justify-center gap-8 rounded-2xl border border-neutral-400 bg-gradient-to-br from-neutral-600/20 to-gray-800/40 p-10 !text-white md:w-[750px]">
-      <h2 className="text-center text-4xl font-semibold md:text-5xl">
-        Speech Emotion Detector
-      </h2>
+      <div className="flex items-center justify-between">
+        <h2 className="mx-auto text-4xl font-semibold md:text-5xl">
+          Speech Emotion Detector
+        </h2>
+      </div>
       <p className="text-center text-lg">
-        Welcome, {localStorage.getItem('userFullname') || 'User'} (
-        {localStorage.getItem('userEmail') || 'No email'})!
+        Welcome, {getUserName()} ({getUserEmail()})!
       </p>
       <p className="text-center text-lg">
         Upload or record an audio file to detect emotion
@@ -369,6 +407,14 @@ const EmotionDetector = () => {
                 Accuracy:{' '}
                 <span className="nova font-semibold text-green-400">
                   {Number((accuracy * 100).toFixed(2))}%
+                </span>
+              </p>
+            )}
+            {sentiment && sentiment !== 'not_detected' && (
+              <p className="text-white">
+                Sentiment:{' '}
+                <span className="nova font-semibold text-green-400 capitalize">
+                  {sentiment}
                 </span>
               </p>
             )}
