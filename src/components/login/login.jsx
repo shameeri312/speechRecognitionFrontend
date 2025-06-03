@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import bcrypt from 'bcryptjs'
 
 const Login = () => {
   const [email, setEmail] = useState('')
@@ -11,39 +10,67 @@ const Login = () => {
   const navigate = useNavigate()
 
   const handleLogin = async () => {
+    setError('')
     if (!email || !password) {
       setError('Please enter both email and password.')
       return
     }
 
     try {
-      // Retrieve users from localStorage
-      const users = JSON.parse(localStorage.getItem('users')) || {}
-      const user = users[email]
+      // Authenticate user
+      const loginResponse = await fetch('http://127.0.0.1:5000/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      })
 
-      if (!user) {
-        setError('Invalid credentials.')
+      const loginData = await loginResponse.json()
+
+      if (!loginResponse.ok) {
+        setError(loginData.error || 'An error occurred during login.')
         return
       }
 
-      // Verify password
-      const isPasswordValid = await bcrypt.compare(password, user.password)
-      if (!isPasswordValid) {
-        setError('Invalid credentials.')
+      // Fetch user profile using user_id
+      const userId = loginData.user.id
+      const profileResponse = await fetch(
+        `http://127.0.0.1:5000/users/${userId}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+
+      const profileData = await profileResponse.json()
+
+      if (!profileResponse.ok) {
+        setError(profileData.error || 'Failed to fetch user profile.')
         return
       }
 
-      // Generate a mock token (for compatibility with EmotionDetector)
-      const mockToken = Math.random().toString(36).substring(2)
-      localStorage.setItem('token', mockToken)
-      localStorage.setItem('userEmail', user.email)
-      localStorage.setItem('userFullname', user.fullname)
+      // Store data in localStorage
+      localStorage.setItem('token', loginData.token)
+      localStorage.setItem('userEmail', profileData.email)
+      localStorage.setItem('userFullname', profileData.full_name)
+      localStorage.setItem(
+        'userProfile',
+        JSON.stringify({
+          id: profileData.id,
+          username: profileData.username,
+          email: profileData.email,
+          full_name: profileData.full_name,
+        })
+      )
 
       // Navigate to detector
       navigate('/detector')
     } catch (err) {
       console.error('Login error:', err)
-      setError('An error occurred. Please try again later.')
+      setError('Failed to connect to the server. Please try again later.')
     }
   }
 

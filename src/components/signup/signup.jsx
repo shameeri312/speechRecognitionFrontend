@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import bcrypt from 'bcryptjs'
 
 const Signup = () => {
   const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('') // Added username state
   const [fullname, setFullname] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -13,7 +13,10 @@ const Signup = () => {
   const navigate = useNavigate()
 
   const handleSignup = async () => {
-    if (!email || !fullname || !password || !confirmPassword) {
+    setError('') // Clear previous errors
+
+    // Validate inputs
+    if (!email || !username || !fullname || !password || !confirmPassword) {
       setError('Please fill in all fields.')
       return
     }
@@ -24,30 +27,31 @@ const Signup = () => {
     }
 
     try {
-      // Check if email already exists in localStorage
-      const existingUsers = JSON.parse(localStorage.getItem('users')) || {}
-      if (existingUsers[email]) {
-        setError('Email already exists.')
-        return
+      const response = await fetch('http://127.0.0.1:5000/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          email,
+          full_name: fullname,
+          password,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        // Success: Navigate to sign-in page
+        navigate('/signin')
+      } else {
+        // Handle API errors (e.g., duplicate username/email, invalid email)
+        setError(data.error || 'An error occurred. Please try again.')
       }
-
-      // Hash the password
-      const salt = await bcrypt.genSalt(10)
-      const hashedPassword = await bcrypt.hash(password, salt)
-
-      // Store user credentials in localStorage
-      existingUsers[email] = {
-        email,
-        fullname,
-        password: hashedPassword,
-      }
-      localStorage.setItem('users', JSON.stringify(existingUsers))
-
-      // Navigate to login
-      navigate('/signin')
     } catch (err) {
       console.error('Signup error:', err)
-      setError('An error occurred. Please try again later.')
+      setError('Failed to connect to the server. Please try again later.')
     }
   }
 
@@ -66,6 +70,20 @@ const Signup = () => {
               {error}
             </p>
           )}
+          <div className="flex flex-col gap-1">
+            <label htmlFor="username" className="text-sm">
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              placeholder="Enter your username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="h-10 rounded-xl border border-neutral-600 bg-gradient-to-br from-neutral-600/20 to-gray-400/20 px-4 text-sm text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none md:h-12"
+            />
+          </div>
+
           <div className="flex flex-col gap-1">
             <label htmlFor="email" className="text-sm">
               Email
